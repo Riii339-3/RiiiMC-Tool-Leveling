@@ -1,0 +1,10 @@
+{
+  "itemGroup.riiimc_leveling.leveling": "RiiiMC Tool Leveling",
+  "section.riiimc_leveling.misc": "Misc",
+  "section.riiimc_leveling.upgrades": "Upgrades",
+  "item.riiimc_leveling.upgrade_plate.tooltip.slot": "Slots",
+  "item.riiimc_leveling.upgrade_plate.tooltip.attribute": "Slot: %s, Attribute: %s",
+  "tooltip.riiimc_leveling.level": "Tool Level",
+  "item.riiimc_leveling.leveling_table": "Leveling Table",
+  "block.riiimc_leveling.leveling_table": "Leveling Table"
+}
