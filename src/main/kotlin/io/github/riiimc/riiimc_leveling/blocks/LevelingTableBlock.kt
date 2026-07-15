@@ -53,34 +53,39 @@ class LevelingTableBlock(properties: BlockBehaviour.Properties): Block(propertie
 
 
         // 材料スロットを後ろから検索
-        for (i in inventory.slots - 1 downTo MATERIAL_START_SLOT) {
+        // 材料スロットを後ろから検索
+        for (i in inventory.slots - 1 downTo 0) {
 
             val stack = inventory.getStackInSlot(i)
 
             if (stack.isEmpty)
                 continue
 
-
             val copy = stack.copy()
-
 
             if (!player.addItem(copy)) {
                 player.drop(copy, false)
             }
 
+            inventory.setStackInSlot(i, ItemStack.EMPTY)
 
-            inventory.setStackInSlot(
-                i,
-                ItemStack.EMPTY
-            )
+            // 可変スロットだけ縮小
+            if (i >= MATERIAL_START_SLOT) {
+                var newSize = MATERIAL_START_SLOT
 
+                for (slot in inventory.slots - 1 downTo MATERIAL_START_SLOT) {
+                    if (!inventory.getStackInSlot(slot).isEmpty) {
+                        newSize = slot + 1
+                        break
+                    }
+                }
+
+                inventory.resize(newSize)
+            }
 
             be.setChanged()
-
-
             return InteractionResult.SUCCESS
         }
-
 
         return InteractionResult.PASS
     }
@@ -118,80 +123,49 @@ class LevelingTableBlock(properties: BlockBehaviour.Properties): Block(propertie
                 player.mainHandItem.count = 0
             }
             stack.`is`(LevelingTags.RepairMaterialTag) -> {
-                val materialStartSlot = 3
-                var nowSlot = inventory.slots - 1
 
-// 材料スロットがまだ存在しない場合
-                if (inventory.slots <= materialStartSlot) {
-                    inventory.resize(materialStartSlot + 1)
-                    nowSlot = materialStartSlot
-                }
+                // 同じアイテムで64未満のスタックを探す
+                for (slot in MATERIAL_START_SLOT until inventory.slots) {
+                    val current = inventory.getStackInSlot(slot)
 
-// 追加対象スロット
-                val currentStack = inventory.getStackInSlot(nowSlot)
+                    if (current.isEmpty) continue
+                    if (!ItemStack.isSameItemSameComponents(current, stack)) continue
+                    if (current.count >= current.maxStackSize) continue
 
-                if (currentStack.isEmpty) {
-                    val newStack = stack.copy()
-                    newStack.count = stack.count.coerceAtMost(64)
+                    val insert = minOf(stack.count, current.maxStackSize - current.count)
+                    current.grow(insert)
+                    inventory.setStackInSlot(slot, current)
 
-                    inventory.setStackInSlot(nowSlot, newStack)
+                    stack.shrink(insert)
 
-                    // 64個入ったら次のスロットを準備
-                    if (newStack.count >= 64) {
-                        inventory.resize(inventory.slots + 1)
-                    }
-
-                    stack.shrink(newStack.count)
-                } else {
-                    val max = 64
-                    val setCount = currentStack.count + stack.count
-
-                    when {
-                        setCount < max -> {
-                            val newStack = currentStack.copy()
-                            newStack.count = setCount
-
-                            inventory.setStackInSlot(nowSlot, newStack)
-                            stack.shrink(stack.count)
-                        }
-
-                        setCount == max -> {
-                            val newStack = currentStack.copy()
-                            newStack.count = max
-
-                            inventory.setStackInSlot(nowSlot, newStack)
-
-                            stack.shrink(stack.count)
-
-                            // 次の材料スロット追加
-                            inventory.resize(inventory.slots + 1)
-                        }
-
-                        setCount > max -> {
-                            val insertCount = max - currentStack.count
-
-                            val newStack = currentStack.copy()
-                            newStack.count = max
-
-                            inventory.setStackInSlot(nowSlot, newStack)
-
-                            // 入らなかった分だけ手持ちに残す
-                            stack.shrink(insertCount)
-
-                            // 次のスロットを追加
-                            inventory.resize(inventory.slots + 1)
-
-                            val nextSlot = inventory.slots - 1
-
-                            val remain = stack.copy()
-                            remain.count = stack.count
-
-                            inventory.setStackInSlot(nextSlot, remain)
-
-                            stack.shrink(stack.count)
-                        }
+                    if (stack.isEmpty) {
+                        be.setChanged()
+                        return ItemInteractionResult.SUCCESS
                     }
                 }
+
+                // 空スロットを探す
+                for (slot in MATERIAL_START_SLOT until inventory.slots) {
+                    if (inventory.getStackInSlot(slot).isEmpty) {
+                        val copy = stack.copy()
+                        copy.count = minOf(copy.maxStackSize, stack.count)
+
+                        inventory.setStackInSlot(slot, copy)
+                        stack.shrink(copy.count)
+
+                        be.setChanged()
+                        return ItemInteractionResult.SUCCESS
+                    }
+                }
+
+                // 空きがないなら1つ増やす
+                inventory.resize(inventory.slots + 1)
+
+                val copy = stack.copy()
+                copy.count = minOf(copy.maxStackSize, stack.count)
+
+                inventory.setStackInSlot(inventory.slots - 1, copy)
+                stack.shrink(copy.count)
             }
             stack.`is`(LevelingTags.UpgradeItemTag) -> {
                 if (!inventory.getStackInSlot(2).isEmpty) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
@@ -210,6 +184,7 @@ class LevelingTableBlock(properties: BlockBehaviour.Properties): Block(propertie
         }
         be.setChanged()
 
+        /*
         if (!stack.`is`(LevelingTags.LevelingToolTag)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
         }
@@ -221,7 +196,9 @@ class LevelingTableBlock(properties: BlockBehaviour.Properties): Block(propertie
             return ItemInteractionResult.SUCCESS
         }
 
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION
+         */
+
+        return ItemInteractionResult.SUCCESS
     }
 
     fun collectData(pos: BlockPos, dataResult: Boolean) {

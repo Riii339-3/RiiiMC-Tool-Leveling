@@ -6,36 +6,51 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.ArmorItem
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TieredItem
+import net.minecraft.world.item.crafting.Ingredient
+import net.minecraft.world.level.ItemLike
 import net.silentchaos512.gear.api.util.GearComponent
 import net.silentchaos512.gear.api.util.GearComponentInstance
 import net.silentchaos512.gear.setup.SgDataComponents
 
 object LevelingUtils {
-    fun checkTool(tool: ItemStack, repair: ItemStack): Boolean {
+    fun getUpgradeIngredient(tool: ItemStack): Ingredient? {
+
+        // Silent Gear
         if (SGearCompat.checkMod()) {
             val construction = tool.get(SgDataComponents.GEAR_CONSTRUCTION)
             if (construction != null) {
-                val parts = construction.parts
+                val items = mutableListOf<ItemLike>()
 
-                parts.forEach { part ->
+                construction.parts.forEach { part ->
                     part.materials.forEach { material ->
-                        return material.item.item == repair.item
+                        items += material.item.item
                     }
                 }
-                return false
+
+                if (items.isNotEmpty()) {
+                    return Ingredient.of(*items.toTypedArray())
+                }
             }
         }
-        return when (val item = tool.item) {
-            is TieredItem -> {
-                item.tier.repairIngredient.test(repair)
-            }
 
-            is ArmorItem -> {
-                item.material.value().repairIngredient.get().test(repair)
-            }
-
-            else -> false
+        // TieredItem
+        val item = tool.item
+        if (item is TieredItem) {
+            return item.tier.repairIngredient
         }
+
+        // Armor
+        if (item is ArmorItem) {
+            return item.material.value().repairIngredient.get()
+        }
+
+        return null
+    }
+    fun checkTool(tool: ItemStack, repair: ItemStack): Boolean {
+        val ingredient = getUpgradeIngredient(tool)
+            ?: return false
+
+        return ingredient.test(repair)
     }
 
     fun rl(id: String): ResourceLocation {

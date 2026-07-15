@@ -7,19 +7,18 @@ import net.neoforged.neoforge.items.ItemStackHandler
 class DynamicItemHandler(size: Int) : ItemStackHandler(size) {
 
     fun resize(newSize: Int) {
-        if (newSize <= stacks.size) return
+        if (newSize == stacks.size) return
 
         val oldStacks = stacks.toList()
 
         stacks = NonNullList.withSize(newSize, ItemStack.EMPTY)
 
-        oldStacks.forEachIndexed { index, stack ->
+        oldStacks.take(newSize).forEachIndexed { index, stack ->
             stacks[index] = stack
         }
 
         onContentsChanged(-1)
     }
-
     override fun onContentsChanged(slot: Int) {
         // BlockEntity側でdirty
     }

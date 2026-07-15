@@ -196,6 +196,24 @@ class LevelingTableBlockEntity(pos: BlockPos, state: BlockState): BlockEntity(Le
                     hasMaterial(
                         getUpgradeCost()
                     )
+        var upgradeItem: IUpgradePlate
+
+        if (upgrade.item is IUpgradePlate) {
+            upgradeItem = upgrade.item as IUpgradePlate
+            tool.get(LevelingRegistry.TOOL_LEVEL)?.let {
+                PacketDistributor.sendToPlayer(
+                    player,
+                    CheckItemsRequestToClientPayload(
+                        pos,
+                        false
+                    )
+                )
+                if (upgradeItem.slotCost > it.availableSlots) {
+                    return
+                }
+            }
+        }
+
 
 
         PacketDistributor.sendToPlayer(
