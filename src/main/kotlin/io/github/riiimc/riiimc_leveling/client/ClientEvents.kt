@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent
 
@@ -25,6 +26,15 @@ object ClientEvents {
             ::LevelingTableScreen
         )
     }
+    @SubscribeEvent
+    @JvmStatic
+    fun registerGuiLayers(event: RegisterGuiLayersEvent) {
+        event.registerAboveAll(
+            LevelingTableMiniGameScreen.ID,
+            LevelingTableMiniGameScreen.INSTANCE
+        )
+    }
+
 
     @SubscribeEvent
     @JvmStatic

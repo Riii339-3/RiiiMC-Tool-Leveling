@@ -6,5 +6,6 @@
   "item.riiimc_leveling.upgrade_plate.tooltip.attribute": "Slot: %s, Attribute: %s",
   "tooltip.riiimc_leveling.level": "Tool Level",
   "item.riiimc_leveling.leveling_table": "Leveling Table",
-  "block.riiimc_leveling.leveling_table": "Leveling Table"
+  "block.riiimc_leveling.leveling_table": "Leveling Table",
+  "gui.riiimc_leveling.leveling_table.upgrade": "Upgrade"
 }

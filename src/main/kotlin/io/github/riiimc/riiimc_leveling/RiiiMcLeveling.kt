@@ -41,16 +41,16 @@ class RiiiMcLeveling(modEventBus: IEventBus, modContainer: ModContainer) {
 
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC)
+        modContainer.registerConfig(ModConfig.Type.COMMON, LevelingConfig.SPEC)
     }
 
     private fun commonSetup(event: FMLCommonSetupEvent?) {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP")
 
-        if (Config.logDirtBlock) LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT))
+        if (LevelingConfig.logDirtBlock) LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT))
 
-        LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber)
+        LOGGER.info(LevelingConfig.magicNumberIntroduction + LevelingConfig.magicNumber)
 
     }
 

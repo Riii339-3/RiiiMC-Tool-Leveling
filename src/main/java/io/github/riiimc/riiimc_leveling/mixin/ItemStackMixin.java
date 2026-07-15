@@ -1,6 +1,6 @@
 package io.github.riiimc.riiimc_leveling.mixin;
 
-import io.github.riiimc.riiimc_leveling.Config;
+import io.github.riiimc.riiimc_leveling.LevelingConfig;
 import io.github.riiimc.riiimc_leveling.registries.LevelingRegistry;
 import io.github.riiimc.riiimc_leveling.LevelingTags;
 import io.github.riiimc.riiimc_leveling.components.ToolAttributeData;
@@ -26,12 +26,13 @@ public class ItemStackMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;setDamageValue(I)V", shift = At.Shift.AFTER)
     )
     public void onHurtAndBreak(int damage, ServerLevel level, @Nullable LivingEntity entity, Consumer<Item> consumer, CallbackInfo ci) {
+        if (!(LevelingConfig.INSTANCE.getDURABILITY_EDITION().get())) return;
         if (!(entity instanceof Player)) return;
         ItemStack stack = (ItemStack)(Object)this;
         if (!(stack.is(LevelingTags.LevelingToolTag))) return;
         ToolLevelData data = stack.get(LevelingRegistry.TOOL_LEVEL.get());
         if (data == null) {
-            data = new ToolLevelData(0, 0, Config.INSTANCE.getBASE_NEXT_EXP().get(), List.of(), 0, List.of());
+            data = new ToolLevelData(0, 0, LevelingConfig.INSTANCE.getBASE_NEXT_EXP().get(), List.of(), 0, List.of());
             stack.set(LevelingRegistry.TOOL_LEVEL.get(), data);
         }
         int toolLevel = data.level;
@@ -41,11 +42,11 @@ public class ItemStackMixin {
         int toolCost = data.availableSlots;
         List<ToolAttributeData> toolAttributes = data.toolAttributes;
         if (toolExp >= toolNextLevelExp) {
-            if (toolLevel >= Config.INSTANCE.getMAX_LEVEL().get()) return;
+            if (toolLevel >= LevelingConfig.INSTANCE.getMAX_LEVEL().get()) return;
             toolLevel++;
             toolExp = 0;
             toolCost++;
-            double toolNextLevelExpCap = toolNextLevelExp * Config.INSTANCE.getNEXT_EXP_RATE().get();
+            double toolNextLevelExpCap = toolNextLevelExp * LevelingConfig.INSTANCE.getNEXT_EXP_RATE().get();
             toolNextLevelExp = (int) toolNextLevelExpCap;
         }
         stack.set(
@@ -61,13 +62,14 @@ public class ItemStackMixin {
         );
     }
 
+    /*
     @Inject(method = "getMaxStackSize", at = @At(
             "HEAD"
     ), cancellable = true)
     public void onGetMaxStackSize(CallbackInfoReturnable<Integer> ci) {
         ItemStack stack = (ItemStack)(Object)this;
         if (stack.is(LevelingTags.RepairMaterialTag)) {
-            ci.setReturnValue(Config.INSTANCE.getMAX_MATERIAL_AMOUNT().get());
+            ci.setReturnValue(LevelingConfig.INSTANCE.getMAX_MATERIAL_AMOUNT().get());
         }
     }
 
@@ -76,6 +78,8 @@ public class ItemStackMixin {
             constant = @Constant(intValue = 99)
     )
     private static int changeMaxStackCount(int value) {
-        return Config.INSTANCE.getMAX_MATERIAL_AMOUNT().get();
+        return LevelingConfig.INSTANCE.getMAX_MATERIAL_AMOUNT().get();
     }
+
+     */
 }

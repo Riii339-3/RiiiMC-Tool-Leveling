@@ -4,11 +4,7 @@
   "package": "io.github.riiimc.riiimc_leveling.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ContainerMixin",
-    "ItemEntityMixin",
-    "ItemMixin",
-    "ItemStackMixin",
-    "SlotMixin"
+    "ItemStackMixin"
   ],
   "client": [
   ],

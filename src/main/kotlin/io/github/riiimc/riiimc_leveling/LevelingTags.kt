@@ -1,5 +1,6 @@
 package io.github.riiimc.riiimc_leveling
 
+import io.github.riiimc.riiimc_leveling.utils.LevelingUtils
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
@@ -14,4 +15,6 @@ object LevelingTags {
 
     @JvmField
     val RepairMaterialTag = TagKey.create<Item>(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RiiiMcLeveling.MODID, "repair_materials"))
+
+    val HammersTag = TagKey.create(Registries.ITEM, LevelingUtils.rl("hammers"))
 }

@@ -7,30 +7,29 @@ import net.minecraft.network.codec.StreamCodec
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload
 import net.minecraft.resources.ResourceLocation
 
-class UpgradeRequestPacketPayload(
+class CheckItemsRequestToClientPayload(
     val pos: BlockPos,
     val result: Boolean
-) : CustomPacketPayload {
-
-    override fun type(): CustomPacketPayload.Type<UpgradeRequestPacketPayload> {
+): CustomPacketPayload {
+    override fun type(): CustomPacketPayload.Type<CheckItemsRequestToClientPayload> {
         return TYPE
     }
 
     companion object {
-        val TYPE: CustomPacketPayload.Type<UpgradeRequestPacketPayload> =
+        val TYPE: CustomPacketPayload.Type<CheckItemsRequestToClientPayload> =
             CustomPacketPayload.Type(
                 ResourceLocation.fromNamespaceAndPath(
                     RiiiMcLeveling.MODID,
-                    "upgrade_request"
+                    "check_items_request_to_client"
                 )
             )
 
         val STREAM_CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC,
-            UpgradeRequestPacketPayload::pos,
+            CheckItemsRequestToClientPayload::pos,
             ByteBufCodecs.BOOL,
-            UpgradeRequestPacketPayload::result,
-            ::UpgradeRequestPacketPayload
+            CheckItemsRequestToClientPayload::result,
+            ::CheckItemsRequestToClientPayload
         )
     }
 }

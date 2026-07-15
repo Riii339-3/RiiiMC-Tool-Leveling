@@ -1,14 +1,18 @@
 package io.github.riiimc.riiimc_leveling.menu
 
+import com.mojang.datafixers.util.Pair
 import io.github.riiimc.riiimc_leveling.registries.LevelingRegistry
 import io.github.riiimc.riiimc_leveling.LevelingTags
 import io.github.riiimc.riiimc_leveling.SlotType
 import io.github.riiimc.riiimc_leveling.blockentity.LevelingTableBlockEntity
 import io.github.riiimc.riiimc_leveling.handler.LevelingSlotItemHandler
 import io.github.riiimc.riiimc_leveling.handler.LevelingSlotMaterialItemHandler
+import io.github.riiimc.riiimc_leveling.utils.LevelingUtils
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.InventoryMenu
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.ItemStack
 import net.neoforged.neoforge.items.SlotItemHandler
@@ -23,7 +27,7 @@ class LevelingTableMenu(
 ) {
     init {
         // 0: ツール
-        addSlot(object : SlotItemHandler(blockEntity.inventory, 0, 44, 35) {
+        addSlot(object : SlotItemHandler(blockEntity.inventory, 0, 78, 54) {
             override fun mayPlace(stack: ItemStack): Boolean {
                 return stack.has(LevelingRegistry.TOOL_LEVEL.get())
             }
@@ -33,10 +37,10 @@ class LevelingTableMenu(
         addSlot(LevelingSlotItemHandler(blockEntity, 1, 62, 35, SlotType.REPAIR))
 
 // 2: 敵ドロップ素材
-        addSlot(LevelingSlotMaterialItemHandler(blockEntity, 2, 80, 35, SlotType.MATERIAL))
+        addSlot(LevelingSlotMaterialItemHandler(blockEntity, 3, 80, 35, SlotType.MATERIAL))
 
 // 3: アップグレード板
-        addSlot(object : SlotItemHandler(blockEntity.inventory, 3, 98, 35) {
+        addSlot(object : SlotItemHandler(blockEntity.inventory, 2, 98, 35) {
             override fun mayPlace(stack: ItemStack): Boolean {
                 return stack.`is`(LevelingTags.UpgradeItemTag)
             }
@@ -50,7 +54,7 @@ class LevelingTableMenu(
                         playerInventory,
                         col + row * 9 + 9,
                         8 + col * 18,
-                        84 + row * 18
+                        84 + row * 18 + 32
                     )
                 )
             }
@@ -63,7 +67,7 @@ class LevelingTableMenu(
                     playerInventory,
                     col,
                     8 + col * 18,
-                    142
+                    174
                 )
             )
         }

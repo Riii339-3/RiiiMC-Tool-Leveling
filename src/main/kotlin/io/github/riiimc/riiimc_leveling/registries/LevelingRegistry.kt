@@ -5,6 +5,7 @@ import io.github.riiimc.riiimc_leveling.blockentity.LevelingTableBlockEntity
 import io.github.riiimc.riiimc_leveling.blocks.LevelingTableBlock
 import io.github.riiimc.riiimc_leveling.components.ToolAttributeData
 import io.github.riiimc.riiimc_leveling.components.ToolLevelData
+import io.github.riiimc.riiimc_leveling.items.HammerItem
 import io.github.riiimc.riiimc_leveling.items.upgrades.UpgradePlateItem
 import io.github.riiimc.riiimc_leveling.menu.LevelingTableMenu
 import io.github.riiimc.riiimc_leveling.utils.LevelingUtils
@@ -161,6 +162,7 @@ object LevelingRegistry {
             .setBannerColor(0xFF0000)
             .add(LEVELING_TABLE_ITEM)
             .add(MATERIAL_ITEM)
+            .add(STONE_HAMMER)
         )
         upgradeTab = FancyTabSections.addSection(LEVELING_TAB.id, SectionColored(
             LevelingUtils.rl("upgrades")
@@ -171,5 +173,12 @@ object LevelingRegistry {
 
     val MATERIAL_ITEM = ITEMS.register("basic_material", Supplier {
         Item(Item.Properties())
+    })
+    val OPEN_GUI_ITEM = ITEMS.register("debug1", Supplier {
+        Item(Item.Properties())
+    })
+
+    val STONE_HAMMER = ITEMS.register("stone_hammer", Supplier {
+        HammerItem(Item.Properties().stacksTo(1))
     })
 }
